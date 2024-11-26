@@ -3,13 +3,11 @@ import sys
 
 from fastapi import FastAPI, HTTPException
 from loguru import logger
-from requests import session
 from starlette.middleware.cors import CORSMiddleware
-from starlette.requests import Request
 from starlette.websockets import WebSocketDisconnect, WebSocket
 
 from app.handler.request_handler import request_handler
-from app.model.dto.request_model_dto import RequestModelDTO
+from app.model.dto.request_model_dto import RequestModelDTO, CustomFileModel
 
 origins = [
     "http://localhost",
@@ -45,10 +43,10 @@ async def health_endpoint() -> str:
     return "Backend is healthy"
 
 @app.post("/receiveQuestion")
-async def receive_question(data: str):
+async def receive_question(data: str, session_id: str = "1", file: CustomFileModel = None):
     try:
 
-        request_dto = RequestModelDTO(text=data, session_id="1")
+        request_dto = RequestModelDTO(text=data, session_id=session_id, file=file)
 
         response = request_handler(request_dto)
 
