@@ -12,30 +12,31 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.utils import Output
 from loguru import logger
 
-from app.config.chat_model_config import system_template, chat_model
-from app.model.dto.answer_model_dto import AnswerModelDTO
+from app.config.chat_model_config import chat_model
 from app.model.dto.request_model_dto import RequestModelDTO
 
-store = {}
+base_chat_store = {}
 
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-    if session_id not in store:
-        store[session_id] = ChatMessageHistory()
-    return store[session_id]
+
+def get_base_chat_history(unique_key: str) -> BaseChatMessageHistory:
+    if unique_key not in base_chat_store:
+        base_chat_store[unique_key] = ChatMessageHistory()
+    return base_chat_store[unique_key]
 
 
 def handle_chat_model_request(
-        request: RequestModelDTO, vectorstore: Optional[Chroma]
-) -> Optional[AnswerModelDTO]:
-
+        request: RequestModelDTO, vectorstore: Optional[Chroma], prompt_template: str
+) -> Optional[str]:
     try:
         chain_with_message_history: RunnableWithMessageHistory
+
+        unique_key = request.uuid + request.deck.deck_name
 
         prompt_message = ChatPromptTemplate.from_messages(
             [
                 (
                     "system",
-                    system_template,
+                    prompt_template,
                 ),
                 MessagesPlaceholder("chat_history"),
                 (
@@ -86,7 +87,7 @@ def handle_chat_model_request(
 
             chain_with_message_history = RunnableWithMessageHistory(
                 chain,
-                get_session_history,
+                get_base_chat_history,
                 input_messages_key="input",
                 history_messages_key="chat_history",
                 output_messages_key="answer",
@@ -95,21 +96,19 @@ def handle_chat_model_request(
             model_answer: Output = chain_with_message_history.invoke(
                 {
                     "input": request.text,
-                    "chat_history": get_session_history(request.session_id),
+                    "chat_history": get_base_chat_history(unique_key),
                 },
-                config={"configurable": {"session_id": request.session_id}},
+                config={"configurable": {"session_id": unique_key}},
             )
 
-            return AnswerModelDTO(
-                answer=model_answer["answer"],
-            )
+            return model_answer["answer"]
 
         else:  # Non-RAG-Version
             chain = prompt_message | chat_model
 
             chain_with_message_history = RunnableWithMessageHistory(
                 chain,
-                get_session_history,
+                get_base_chat_history,
                 input_messages_key="input",
                 history_messages_key="chat_history",
             )
@@ -117,14 +116,12 @@ def handle_chat_model_request(
             model_answer = chain_with_message_history.invoke(
                 {
                     "input": request.text,
-                    "chat_history": get_session_history(request.session_id),
+                    "chat_history": get_base_chat_history(unique_key),
                 },
-                config={"configurable": {"session_id": request.session_id}},
+                config={"configurable": {"session_id": unique_key}},
             )
 
-            return AnswerModelDTO(
-                answer=model_answer.content,
-            )
+            return model_answer.content
 
     except Exception as e:
         logger.opt(exception=e).error(

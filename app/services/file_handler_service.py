@@ -27,7 +27,7 @@ BATCH_SIZE = 10
 TRANSFORMER_DIMENSIONS = 768
 MAX_URL_DEPTH = 5
 
-class DatabaseService:
+class FileHandlerService:
     def __init__(self):
         self.model_transformer = SentenceTransformer(
             "mixedbread-ai/mxbai-embed-large-v1",
