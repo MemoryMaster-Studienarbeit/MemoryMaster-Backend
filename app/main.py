@@ -42,7 +42,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATABASE_URL = "postgresql://memorymaster:memorymaster@localhost:5432/MemoryMaster-Backend"
+DATABASE_URL = "postgresql://memorymaster:memorymaster@postgres:5432/MemoryMaster-Backend"
 engine = create_engine(DATABASE_URL)
 
 def get_db() -> Generator[Session, None, None]:
