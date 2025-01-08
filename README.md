@@ -14,3 +14,4 @@
 ## API-Docs
 - API-Docs sind unter `http://localhost:8000/docs` zu finden
 ## Fragen? -> Nö
+- installieren von Docker compose : `pip install docker-compose` (Version: Docker Compose version v2.29.7-desktop.1)
