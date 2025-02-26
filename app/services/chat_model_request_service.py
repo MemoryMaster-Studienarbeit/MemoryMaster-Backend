@@ -25,11 +25,12 @@ def get_base_chat_history(unique_key: str) -> BaseChatMessageHistory:
 
 
 def handle_chat_model_request(
-        request: RequestModelDTO, vectorstore: Optional[Chroma], prompt_template: str
+        request: RequestModelDTO, vectorstore: Optional[Chroma], prompt_template: str, ai_model: str
 ) -> Optional[str]:
     try:
         chain_with_message_history: RunnableWithMessageHistory
 
+        chat_model.model_name = ai_model
         unique_key = request.uuid + request.deck.deck_name
 
         prompt_message = ChatPromptTemplate.from_messages(
