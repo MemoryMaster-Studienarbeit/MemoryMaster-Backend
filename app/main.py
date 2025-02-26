@@ -15,7 +15,7 @@ from app.handler.generate_card_handler import generate_card_handler
 from app.handler.session_handler import SessionHandler
 from app.model.dao.deck_model_dao import  Session
 from app.model.dto.answer_model_dto import DeckDTO
-from app.model.dto.request_model_dto import RequestModelDTO, CustomFileModel
+from app.model.dto.request_model_dto import RequestModelDTO, GenerateCardDTO, CreateCardDTO, UpdateCardDTO
 from app.handler.card_handler import CardHandler
 
 origins = [
@@ -91,7 +91,6 @@ async def get_or_create_session_uuid(
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
 
 
 @app.get(
@@ -182,7 +181,6 @@ async def delete_deck(
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-
 @app.post(
     "/generateCard",
     name="Generate Card",
@@ -193,17 +191,23 @@ async def delete_deck(
     }
 )
 async def generate_card(
-        text: str,
         uuid: str,
         deck_name: str,
-        prompt_template: str = system_template,
-        file: CustomFileModel = None,
+        generate_card_dto: GenerateCardDTO,
         db: Db_session = Depends(get_db)
 ) -> JSONResponse:
     try:
         deck_dto = DeckDTO(deck_name=deck_name, cards=[])
-        request_dto = RequestModelDTO(text=text, uuid=uuid, deck=deck_dto, file=file)
-        return generate_card_handler(request_dto, db, prompt_template)
+        request_dto = RequestModelDTO(text=generate_card_dto.text, uuid=uuid, deck=deck_dto, file=generate_card_dto.file)
+
+        full_prompt_template = system_template + "\n" + generate_card_dto.appending_prompt_template
+
+        if generate_card_dto.ai_model == "":
+            ai_model = "llama3-8b-8192"
+        else:
+            ai_model = generate_card_dto.ai_model
+
+        return generate_card_handler(request_dto, db, full_prompt_template, ai_model)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -222,12 +226,11 @@ async def generate_card(
 async def create_card(
         uuid: str,
         deck_name: str,
-        card_front: str,
-        card_back: str,
+        create_card_dto: CreateCardDTO,
         db: Db_session = Depends(get_db)
 ) -> JSONResponse:
     try:
-        return await CardHandler().create_card_handler(card_back, card_front, db, deck_name, uuid)
+        return await CardHandler().create_card_handler(create_card_dto.card_back, create_card_dto.card_front, db, deck_name, uuid)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -246,13 +249,11 @@ async def create_card(
 async def update_card(
         session_uuid: str,
         deck_name: str,
-        card_uuid: str,
-        card_front: str,
-        card_back: str,
+        update_card_dto: UpdateCardDTO,
         db: Db_session = Depends(get_db)
 ) -> JSONResponse:
     try:
-        return await CardHandler().update_card_handler(card_back, card_front, card_uuid, db, deck_name, session_uuid)
+        return await CardHandler().update_card_handler(update_card_dto.card_back, update_card_dto.card_front, update_card_dto.card_uuid, db, deck_name, session_uuid)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

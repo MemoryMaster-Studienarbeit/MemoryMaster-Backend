@@ -21,7 +21,7 @@ def get_file(session_uuid: str, deck_name: str) -> Optional[CustomFileModel]:
     return file_store[unique_key]
 
 
-def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_template: str) -> JSONResponse:
+def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_template: str, ai_model: str) -> JSONResponse:
     try:
 
         vectorstore = None
@@ -52,7 +52,7 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
                 collection, relevant_documents
             )
 
-        response = handle_chat_model_request(request, vectorstore, prompt_template)
+        response = handle_chat_model_request(request, vectorstore, prompt_template, ai_model)
 
         card_dto = generate_card_from_text(response)
 
