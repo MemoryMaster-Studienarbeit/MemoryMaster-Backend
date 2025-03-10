@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
@@ -32,6 +32,8 @@ class Card(Base):
     card_front = Column(Text, nullable=False)
     card_back = Column(Text, nullable=False)
     deck_id = Column(Integer, ForeignKey("decks.id"), nullable=True)
+    last_learned = Column(String, nullable=False, default="")
+    next_learned = Column(String, nullable=False, default="")
 
     # Relationship back to the deck
     deck = relationship("Deck", back_populates="cards")
