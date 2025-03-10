@@ -22,7 +22,7 @@ class DeckHandler:
         cards = db.query(Card).filter(Card.deck_id == deck.id).all()
         deck_dto = DeckDTO(
             deck_name=deck.deck_name,
-            cards=[CardDTO(card_front=card.card_front, card_back=card.card_back, uuid=card.uuid) for card in cards]
+            cards=[CardDTO(card_front=card.card_front, card_back=card.card_back, uuid=card.uuid, last_learned=card.last_learned, next_learned=card.next_learned) for card in cards]
         )
 
         return JSONResponse(content=json.loads(deck_dto.model_dump_json()), status_code=200)

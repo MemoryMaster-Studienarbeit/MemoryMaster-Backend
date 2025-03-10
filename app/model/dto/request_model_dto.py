@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from pydantic import BaseModel
 
@@ -23,8 +24,12 @@ class GenerateCardDTO(BaseModel):
 class CreateCardDTO(BaseModel):
     card_front: str = ""
     card_back: str = ""
+    last_learned: str = ""
+    next_learned: str = ""
 
 class UpdateCardDTO(BaseModel):
     card_front: str = ""
     card_back: str = ""
     card_uuid: str = ""
+    last_learned: str = ""
+    next_learned: str = ""

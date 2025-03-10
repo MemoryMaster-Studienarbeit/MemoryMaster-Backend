@@ -230,7 +230,7 @@ async def create_card(
         db: Db_session = Depends(get_db)
 ) -> JSONResponse:
     try:
-        return await CardHandler().create_card_handler(create_card_dto.card_back, create_card_dto.card_front, db, deck_name, uuid)
+        return await CardHandler().create_card_handler(create_card_dto.card_back, create_card_dto.card_front, db, deck_name, uuid, create_card_dto.last_learned, create_card_dto.next_learned)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
@@ -253,7 +253,7 @@ async def update_card(
         db: Db_session = Depends(get_db)
 ) -> JSONResponse:
     try:
-        return await CardHandler().update_card_handler(update_card_dto.card_back, update_card_dto.card_front, update_card_dto.card_uuid, db, deck_name, session_uuid)
+        return await CardHandler().update_card_handler(update_card_dto.card_back, update_card_dto.card_front, update_card_dto.card_uuid, db, deck_name, session_uuid, update_card_dto.last_learned, update_card_dto.next_learned)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
