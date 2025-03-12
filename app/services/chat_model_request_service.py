@@ -51,11 +51,16 @@ def handle_chat_model_request(
             retriever = vectorstore.as_retriever()
 
             system_prompt_with_context = (
-                "You are an assistant for question-answering tasks. "
-                "Use the following pieces of retrieved context to answer "
-                "the question. If you don't know the answer, say that you "
-                "don't know and help otherwise. Keep the "
-                "answer concise."
+                "You are an expert tutor. "
+                "Create exactly one flashcards based on the given topic. "
+                "The flashcard must strictly follow the format 'Question ; Answer'. "
+                "The output should only contain the flashcard in this format, without any additional text, explanations, or introductions. "
+                "Respond with only the flashcard, nothing else. "
+                "All content should be in English."
+                "Use the following pieces of retrieved context to form a response."
+                "Always prioritize the context you have."
+                "If you don't know the answer then you will use your knowledge."
+                "Keep the answer concise."
                 "\n\n"
                 "{context}"
             )
