@@ -21,11 +21,11 @@ class CardHandler:
         if not deck:
             return JSONResponse(content="Deck was not found", status_code=404)
 
-        new_card = Card(card_front=card_front, card_back=card_back, deck_id=deck.id, uuid=str(uuid_module.uuid4()), last_learned=last_learned, next_learned=next_learned)
+        new_card = Card(card_front=card_front, card_back=card_back, deck_id= int(str(deck.id)), uuid=str(uuid_module.uuid4()), last_learned=last_learned, next_learned=next_learned)
         db.add(new_card)
         db.commit()
         db.refresh(new_card)
-        card_dto = CardDTO(card_front=new_card.card_front, card_back=new_card.card_back, uuid=new_card.uuid)
+        card_dto = CardDTO(card_front=new_card.card_front, card_back=new_card.card_back, uuid=new_card.uuid, last_learned=new_card.last_learned, next_learned=new_card.next_learned)
 
         return JSONResponse(content=json.loads(card_dto.model_dump_json()), status_code=200)
 
@@ -43,6 +43,11 @@ class CardHandler:
         card = db.query(Card).filter_by(uuid=card_uuid, deck_id=deck.id).first()
         if not card:
             return JSONResponse(content="Card not found", status_code=404)
+
+        card.card_front = card_front
+        card.card_back = card_back
+        card.last_learned = last_learned
+        card.next_learned = next_learned
 
         db.commit()
         db.refresh(card)
