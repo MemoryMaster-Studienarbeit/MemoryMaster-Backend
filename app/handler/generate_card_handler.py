@@ -39,8 +39,6 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
             all_documents, get_file(request.uuid, request.deck.deck_name)
         )
 
-        print(all_documents)
-
         if all_documents:
             # Split documents into manageable chunks for processing
             chunked_documents = fileHandlerService.chunk_handler(all_documents)
