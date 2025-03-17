@@ -22,19 +22,27 @@ class DeckHandler:
         cards = db.query(Card).filter(Card.deck_id == deck.id).all()
         deck_dto = DeckDTO(
             deck_name=deck.deck_name,
-            cards=[CardDTO(card_front=card.card_front, card_back=card.card_back, uuid=card.uuid, last_learned=card.last_learned, next_learned=card.next_learned) for card in cards]
+            cards=[
+                CardDTO(
+                    card_front=card.card_front,
+                    card_back=card.card_back,
+                    card_uuid=card.uuid,
+                    last_learned=card.last_learned,
+                    next_learned=card.next_learned,
+                    stage=card.stage
+                ) for card in cards]
         )
 
         return JSONResponse(content=json.loads(deck_dto.model_dump_json()), status_code=200)
 
 
-    async def get_decks_handler(self, db: Db_session, uuid: str) -> JSONResponse:
+    async def get_decks_handler(self, db: Db_session, session_uuid: str) -> JSONResponse:
 
-        existing_session = db.query(Session).filter_by(uuid=uuid).first()
+        existing_session = db.query(Session).filter_by(session_uuid=session_uuid).first()
         if not existing_session:
             return JSONResponse(content="Session not found", status_code=404)
 
-        decks = db.query(Deck).filter(Deck.uuid == uuid).all()
+        decks = db.query(Deck).filter(Deck.session_uuid == session_uuid).all()
         if not decks:
             return JSONResponse(content="No decks found for the given session_id", status_code=404)
 
@@ -43,17 +51,17 @@ class DeckHandler:
         return JSONResponse(content=json.loads(json.dumps([deck.model_dump() for deck in small_decks_dto])), status_code=200)
 
 
-    async def create_deck_handler(self, db: Db_session, deck_name: str, uuid: str) -> JSONResponse:
+    async def create_deck_handler(self, db: Db_session, deck_name: str, session_uuid: str) -> JSONResponse:
 
-        existing_session = db.query(Session).filter_by(uuid=uuid).first()
+        existing_session = db.query(Session).filter_by(session_uuid=session_uuid).first()
         if not existing_session:
             return JSONResponse(content="Session not found", status_code=404)
 
-        existing_deck = db.query(Deck).filter_by(deck_name=deck_name, uuid=uuid).first()
+        existing_deck = db.query(Deck).filter_by(deck_name=deck_name, session_uuid=session_uuid).first()
         if existing_deck:
             return JSONResponse(content="Deck already exists", status_code=400)
 
-        new_deck = Deck(deck_name=deck_name, uuid=uuid)
+        new_deck = Deck(deck_name=deck_name, session_uuid=session_uuid)
         db.add(new_deck)
         db.commit()
         db.refresh(new_deck)
@@ -62,13 +70,13 @@ class DeckHandler:
         return JSONResponse(content=json.loads(deck_dto.model_dump_json()), status_code=200)
 
 
-    async def delete_deck_handler(self, db: Db_session, deck_name: str, uuid: str) -> JSONResponse:
+    async def delete_deck_handler(self, db: Db_session, deck_name: str, session_uuid: str) -> JSONResponse:
 
-        existing_session = db.query(Session).filter_by(uuid=uuid).first()
+        existing_session = db.query(Session).filter_by(session_uuid=session_uuid).first()
         if not existing_session:
             return JSONResponse(content="Session not found", status_code=404)
 
-        deck = db.query(Deck).filter_by(deck_name=deck_name, uuid=uuid).first()
+        deck = db.query(Deck).filter_by(deck_name=deck_name, session_uuid=session_uuid).first()
         if not deck:
             return JSONResponse(content="Deck was not found", status_code=404)
 

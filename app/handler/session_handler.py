@@ -7,15 +7,15 @@ from app.model.dao.deck_model_dao import Session
 
 class SessionHandler:
 
-    async def get_or_create_session_handler(self, db: Db_session, uuid: str) -> JSONResponse:
+    async def get_or_create_session_handler(self, db: Db_session, session_uuid: str) -> JSONResponse:
 
-        session = db.query(Session).filter_by(uuid=uuid).first()
+        session = db.query(Session).filter_by(session_uuid=session_uuid).first()
         if session:
-            return JSONResponse(content=uuid, status_code=200)
+            return JSONResponse(content=session_uuid, status_code=200)
 
-        new_session = Session(uuid=str(uuid_module.uuid4()))
+        new_session = Session(session_uuid=str(uuid_module.uuid4()))
         db.add(new_session)
         db.commit()
         db.refresh(new_session)
 
-        return JSONResponse(content=new_session.uuid, status_code=200)
+        return JSONResponse(content=new_session.session_uuid, status_code=200)

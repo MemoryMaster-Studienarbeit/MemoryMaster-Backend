@@ -66,7 +66,7 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
 
         deck_id = db.query(Deck).filter_by(uuid=request.uuid, deck_name=request.deck.deck_name).first().id
 
-        card = Card(card_front=card_dto.card_front, card_back=card_dto.card_back, deck_id=deck_id, uuid=card_dto.uuid, last_learned=card_dto.last_learned, next_learned=card_dto.next_learned)
+        card = Card(card_front=card_dto.card_front, card_back=card_dto.card_back, deck_id=deck_id, card_uuid=card_dto.uuid, last_learned=card_dto.last_learned, next_learned=card_dto.next_learned)
         db.add(card)
         db.commit()
         db.refresh(card)

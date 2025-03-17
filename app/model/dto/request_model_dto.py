@@ -11,7 +11,7 @@ class CustomFileModel(BaseModel):
 
 class RequestModelDTO(BaseModel):
     text: str
-    uuid: str
+    session_uuid: str
     deck: DeckDTO
     file: Optional[CustomFileModel] = None
 
@@ -33,3 +33,4 @@ class UpdateCardDTO(BaseModel):
     card_uuid: str = ""
     last_learned: str = ""
     next_learned: str = ""
+    stage: int = 0
