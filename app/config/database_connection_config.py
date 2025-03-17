@@ -20,12 +20,12 @@ def create_tables(engine: Engine) -> None:
 
 
 def initialize_data(db: Db_session) -> None:
-    new_session = Session(uuid="1")
+    new_session = Session(session_uuid="1")
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
 
-    new_deck = Deck(deck_name="New Deck", uuid="1")
+    new_deck = Deck(deck_name="New Deck", session_uuid="1")
     db.add(new_deck)
     db.commit()
     db.refresh(new_deck)

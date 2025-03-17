@@ -37,4 +37,4 @@ def generate_card_from_text(text: str) -> CardDTO:
     except ValueError:
         raise ValueError("Input text must contain exactly one ';' character separating the question and answer.")
 
-    return CardDTO(card_front=question.strip(), card_back=answer.strip(), uuid=str(uuid_module.uuid4()), last_learned="", next_learned="")
+    return CardDTO(card_front=question.strip(), card_back=answer.strip(), card_uuid=str(uuid_module.uuid4()), last_learned="", next_learned="", stage=0)
