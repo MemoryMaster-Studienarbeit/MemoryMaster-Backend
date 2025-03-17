@@ -9,13 +9,13 @@ from app.model.dto.answer_model_dto import CardDTO, DeckDTO, SmallDeckDTO
 
 class DeckHandler:
 
-    async def get_deck_handler(self, db: Db_session, deck_name: str, uuid: str) -> JSONResponse:
+    async def get_deck_handler(self, db: Db_session, deck_name: str, session_uuid: str) -> JSONResponse:
 
-        existing_session = db.query(Session).filter_by(uuid=uuid).first()
+        existing_session = db.query(Session).filter_by(session_uuid=session_uuid).first()
         if not existing_session:
             return JSONResponse(content="Session not found", status_code=404)
 
-        deck = db.query(Deck).filter_by(deck_name=deck_name, uuid=uuid).first()
+        deck = db.query(Deck).filter_by(deck_name=deck_name, session_uuid=session_uuid).first()
         if not deck:
             return JSONResponse(content="Deck was not found", status_code=404)
 
