@@ -64,7 +64,7 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
                 content={"answer": "An Internal Server Error occurred"}, status_code=500
             )
 
-        deck_id = db.query(Deck).filter_by(uuid=request.session_uuid, deck_name=request.deck.deck_name).first().id
+        deck_id = db.query(Deck).filter_by(session_uuid=request.session_uuid, deck_name=request.deck.deck_name).first().id
 
         card = Card(card_front=card_dto.card_front, card_back=card_dto.card_back, deck_id=deck_id, card_uuid=card_dto.card_uuid, last_learned=card_dto.last_learned, next_learned=card_dto.next_learned)
         db.add(card)
