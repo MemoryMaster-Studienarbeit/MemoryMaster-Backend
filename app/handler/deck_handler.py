@@ -26,7 +26,7 @@ class DeckHandler:
                 CardDTO(
                     card_front=card.card_front,
                     card_back=card.card_back,
-                    card_uuid=card.uuid,
+                    card_uuid=card.card_uuid,
                     last_learned=card.last_learned,
                     next_learned=card.next_learned,
                     stage=card.stage
