@@ -29,14 +29,14 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
         vectorstore = None
         all_documents = []
 
-        if not get_file(request.uuid, request.deck.deck_name):
-            file_store[request.uuid + request.deck.deck_name] = request.file
+        if not get_file(request.session_uuid, request.deck.deck_name):
+            file_store[request.session_uuid + request.deck.deck_name] = request.file
 
         client = chromadb.Client()
         collection = client.get_or_create_collection(name="collection")
 
         all_documents = fileHandlerService.csv_file_handler(
-            all_documents, get_file(request.uuid, request.deck.deck_name)
+            all_documents, get_file(request.session_uuid, request.deck.deck_name)
         )
 
         if all_documents:
@@ -64,9 +64,9 @@ def generate_card_handler(request: RequestModelDTO, db: Db_session, prompt_templ
                 content={"answer": "An Internal Server Error occurred"}, status_code=500
             )
 
-        deck_id = db.query(Deck).filter_by(uuid=request.uuid, deck_name=request.deck.deck_name).first().id
+        deck_id = db.query(Deck).filter_by(uuid=request.session_uuid, deck_name=request.deck.deck_name).first().id
 
-        card = Card(card_front=card_dto.card_front, card_back=card_dto.card_back, deck_id=deck_id, card_uuid=card_dto.uuid, last_learned=card_dto.last_learned, next_learned=card_dto.next_learned)
+        card = Card(card_front=card_dto.card_front, card_back=card_dto.card_back, deck_id=deck_id, card_uuid=card_dto.card_uuid, last_learned=card_dto.last_learned, next_learned=card_dto.next_learned)
         db.add(card)
         db.commit()
         db.refresh(card)
