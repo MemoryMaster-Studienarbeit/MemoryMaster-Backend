@@ -31,7 +31,7 @@ def handle_chat_model_request(
         chain_with_message_history: RunnableWithMessageHistory
 
         chat_model.model_name = ai_model
-        unique_key = request.uuid + request.deck.deck_name
+        unique_key = request.session_uuid + request.deck.deck_name
 
         prompt_message = ChatPromptTemplate.from_messages(
             [
