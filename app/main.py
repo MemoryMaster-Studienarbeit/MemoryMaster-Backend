@@ -198,7 +198,7 @@ async def generate_card(
 ) -> JSONResponse:
     try:
         deck_dto = DeckDTO(deck_name=deck_name, cards=[])
-        request_dto = RequestModelDTO(text=generate_card_dto.text, uuid=session_uuid, deck=deck_dto, file=generate_card_dto.file)
+        request_dto = RequestModelDTO(text=generate_card_dto.text, session_uuid=session_uuid, deck=deck_dto, file=generate_card_dto.file)
 
         full_prompt_template = system_template + "\n" + generate_card_dto.appending_prompt_template
 
